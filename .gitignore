@@ -1,0 +1,22 @@
+### Go ###
+# Binaries
+*.exe
+
+# Test binary, built with `go test -c`
+*.test
+
+### VSCode ###
+.vscode/*
+.history
+
+### Local Assets ###
+# All test roms & materials
+*.gb
+*.gbc
+*.wav
+
+### Local tools & local tests ###
+/cmd/test*/
+/cmd/local*/
+/bench/
+t_*_test.go
