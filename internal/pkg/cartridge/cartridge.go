@@ -6,11 +6,16 @@ import (
 	"github.com/jmontupet/gbcore/internal/pkg/memory"
 )
 
+// Cartridge emulate GameBoy cartrigde. Different memory controller can be implemented.
 type Cartridge interface {
 	memory.Memory
 }
 
+// NewCartridge creates a cartridge based on its header data
 func NewCartridge(data []byte) (Cartridge, error) {
+	if data == nil || len(data) < 0x0150 {
+		return nil, fmt.Errorf("CARTRIDGE MIN SIZE IS 0x%04X, GOT 0x%04X", 0x0150, len(data))
+	}
 	switch cType := data[0x147]; cType {
 	case 0x00: // ROM_Only
 		return newROMOnly(data), nil

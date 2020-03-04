@@ -17,20 +17,24 @@ import (
 
 type MMU struct {
 	cartridge    memory.Memory
-	gpu          *gpu.GPU
-	io           *ioports.IOPorts
-	hram         *hram.HRAM
-	wram         *wram.WRam
-	mirrorWram   *wram.TranslatedWram
-	interrupt    *interrupt.Manager
-	joypad       *joypad.Joypad
-	unusableAddr *unusableaddr.UnusableAddr
+	gpu          memory.Memory
+	io           memory.Memory
+	hram         memory.Memory
+	wram         memory.Memory
+	mirrorWram   memory.Memory
+	interrupt    memory.Memory
+	joypad       memory.Memory
+	unusableAddr memory.Memory
 	oamDMA       *OamDmaManager
 	vramDMA      *VramDmaManager
 }
 
 func (mmu *MMU) GetOamDMA() *OamDmaManager   { return mmu.oamDMA }
 func (mmu *MMU) GetVramDMA() *VramDmaManager { return mmu.vramDMA }
+
+func (mmu *MMU) getMemoryAt(addr uint16) memory.Memory {
+	return nil
+}
 
 func NewMMU(
 	cart memory.Memory,
