@@ -3,6 +3,8 @@ package cpu
 import (
 	"log"
 
+	"github.com/jmontupet/gbcore/internal/pkg/memory"
+
 	"github.com/jmontupet/gbcore/internal/pkg/cpu/registers"
 
 	"github.com/jmontupet/gbcore/internal/pkg/interrupt"
@@ -13,7 +15,7 @@ import (
 // CPU emulate GameBoy CPU
 type CPU struct {
 	regs        registers.Registers
-	mmu         *mmu.MMU
+	mmu         memory.Memory
 	interrupts  *interrupt.Manager
 	halt        bool
 	DoubleSpeed bool

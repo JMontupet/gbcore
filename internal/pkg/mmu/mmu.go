@@ -35,6 +35,7 @@ func (mmu *MMU) GetVramDMA() *VramDmaManager { return mmu.vramDMA }
 func (mmu *MMU) getMemoryAt(addr uint16) memory.Memory {
 	return nil
 }
+func (mmu *MMU) SetCartridge(c memory.Memory) { mmu.cartridge = c }
 
 func NewMMU(
 	cart memory.Memory,
