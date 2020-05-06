@@ -6,7 +6,7 @@ import (
 	"github.com/jmontupet/gbcore/internal/pkg/memory"
 )
 
-// Cartridge emulate GameBoy cartrigde. Different memory controller can be implemented.
+// Cartridge emulate GameBoy cartridge. Different memory controller can be implemented.
 type Cartridge interface {
 	memory.Memory
 }

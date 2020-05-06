@@ -103,7 +103,6 @@ func newMBC5(data []byte) Cartridge {
 	}
 
 	switch romSize := ReadROMSize(cartridge); romSize {
-
 	case 0x05: // 05h -		1MByte (64 banks)
 		cartridge.nbROMBank = 64
 	case 0x06: // 06h -   2MByte (128 banks) - only 125 banks used by MBC1

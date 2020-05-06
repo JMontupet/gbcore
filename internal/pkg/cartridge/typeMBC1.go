@@ -17,7 +17,7 @@ type mbc1 struct {
 	ramBank   uint
 	nbRAMBank uint
 
-	modeRam bool
+	modeRAM bool
 
 	ramEnable bool
 }
@@ -53,8 +53,10 @@ func (c *mbc1) Write(addr uint16, value uint8) {
 
 	// 4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only)
 	case addr >= 0x4000 && addr <= 0x5FFF:
-		if c.modeRam {
-			panic(fmt.Sprintf("TODO : 4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only) : %x", addr))
+		if c.modeRAM {
+			panic(fmt.Sprintf(
+				"TODO : 4000-5FFF - RAM Bank Number - or - Upper Bits of ROM Bank Number (Write Only) : %x",
+				addr))
 		}
 		upperBits := uint((value & 0x03) << 5)
 		c.changeROMBank(uint8(c.romBank&0x1F | upperBits))
@@ -64,7 +66,7 @@ func (c *mbc1) Write(addr uint16, value uint8) {
 	// 01h = RAM Banking Mode (up to 32KByte RAM, 512KByte ROM)
 	case addr >= 0x6000 && addr <= 0x7FFF:
 		// fmt.Printf("CHANGE CARTRIDGE MODE TO 0x%02X\n", value)
-		c.modeRam = value&0x0A == 0x0A
+		c.modeRAM = value&0x0A == 0x0A
 
 	// CART RAM
 	case addr >= 0xA000 && addr <= 0xBFFF:

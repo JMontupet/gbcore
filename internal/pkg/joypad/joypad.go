@@ -38,7 +38,6 @@ type Joypad struct {
 }
 
 func (j *Joypad) UpdateInput(input uint8) {
-
 	hwButton := ^(input & 0x0F) // Complement
 	hwArrow := ^(input >> 4)    // Complement
 
@@ -49,7 +48,6 @@ func (j *Joypad) UpdateInput(input uint8) {
 
 	j.hwButton = hwButton
 	j.hwArrow = hwArrow
-
 }
 
 func (j *Joypad) Read(_ uint16) uint8 { // addr = 0xFF00

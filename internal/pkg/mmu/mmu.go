@@ -32,31 +32,28 @@ type MMU struct {
 func (mmu *MMU) GetOamDMA() *OamDmaManager   { return mmu.oamDMA }
 func (mmu *MMU) GetVramDMA() *VramDmaManager { return mmu.vramDMA }
 
-func (mmu *MMU) getMemoryAt(addr uint16) memory.Memory {
-	return nil
-}
 func (mmu *MMU) SetCartridge(c memory.Memory) { mmu.cartridge = c }
 
 func NewMMU(
-	cart memory.Memory,
-	gpu *gpu.GPU,
-	io *ioports.IOPorts,
-	hram *hram.HRAM,
-	ram *wram.WRam,
-	interrupt *interrupt.Manager,
-	joypad *joypad.Joypad,
-	unusableAddr *unusableaddr.UnusableAddr,
+	gbCart memory.Memory,
+	gbGPU *gpu.GPU,
+	gbIO *ioports.IOPorts,
+	gbHRAM *hram.HRAM,
+	gbRAM *wram.WRam,
+	gbInterrupt *interrupt.Manager,
+	gbJoypad *joypad.Joypad,
+	gbUnusableAddr *unusableaddr.UnusableAddr,
 ) *MMU {
 	mmu := &MMU{
-		cartridge:    cart,
-		gpu:          gpu,
-		io:           io,
-		hram:         hram,
-		wram:         ram,
-		mirrorWram:   wram.NewTranlatedWram(ram),
-		interrupt:    interrupt,
-		joypad:       joypad,
-		unusableAddr: unusableAddr,
+		cartridge:    gbCart,
+		gpu:          gbGPU,
+		io:           gbIO,
+		hram:         gbHRAM,
+		wram:         gbRAM,
+		mirrorWram:   wram.NewTranlatedWram(gbRAM),
+		interrupt:    gbInterrupt,
+		joypad:       gbJoypad,
+		unusableAddr: gbUnusableAddr,
 	}
 	mmu.oamDMA = &OamDmaManager{mmu: mmu}
 	mmu.vramDMA = &VramDmaManager{mmu: mmu}

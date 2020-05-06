@@ -29,8 +29,6 @@ const (
 
 type gpuMode uint8
 
-const frameBufferSize = nbFrameRow * nbFrameLines
-
 const (
 	ModeHBlank = iota
 	ModeVBlank
@@ -72,7 +70,7 @@ type GPU struct {
 	// 								0: During H-Blank
 	// 								1: During V-Blank
 	// 								2: During Searching OAM-RAM
-	// 								3: During Transfering Data to LCD Driver
+	// 								3: During Transferring Data to LCD Driver
 
 	// Display registers
 	ly  *ioports.Ptr // LY - LCDC Y-Coordinate
@@ -116,7 +114,7 @@ func (gpu *GPU) setMonoColorPalette(offset int, palette uint8) {
 		2: palette >> 4 & 0x03,
 		3: palette >> 6 & 0x03,
 	} {
-		var intencity uint8 = 0
+		var intencity uint8
 		switch c {
 		case 0:
 			intencity = 0xED
@@ -128,7 +126,6 @@ func (gpu *GPU) setMonoColorPalette(offset int, palette uint8) {
 			intencity = 0x21
 		default:
 			log.Fatal("COLOR NOT DEFINED")
-
 		}
 		gpu.frameColors[(offset+i)*3] = intencity
 		gpu.frameColors[(offset+i)*3+1] = intencity
@@ -180,11 +177,10 @@ func (gpu *GPU) Tick(cycles uint8) uint8 {
 		if gpu.frameCycles >= vBlankEnd { // END : Reset cycles
 			// gpu.frameCycles - vBlankEnd should not exceed 80 (OAM END)
 			gpu.lineCycles = gpu.frameCycles - vBlankEnd
-			gpu.frameCycles = gpu.frameCycles - vBlankEnd
+			gpu.frameCycles -= vBlankEnd
 			gpu.ly.Set(0)
 			gpu.setMode(ModeOAM)
 		}
-
 	} else { // IN FRAME
 		switch {
 		case gpu.lineCycles < oamEnd:
@@ -194,13 +190,11 @@ func (gpu *GPU) Tick(cycles uint8) uint8 {
 					gpu.statInterrupt.Set(true)
 				}
 			}
-			break
 		case gpu.lineCycles < drawEnd:
 			if mode != ModeVRAM {
 				gpu.setMode(ModeVRAM)
 				gpu.drawLine(gpu.ly.Get())
 			}
-			break
 		case gpu.lineCycles < hBlanckEnd:
 			if mode != ModeHBlank {
 				gpu.setMode(ModeHBlank)
@@ -208,14 +202,13 @@ func (gpu *GPU) Tick(cycles uint8) uint8 {
 					gpu.statInterrupt.Set(true)
 				}
 			}
-			break
 		}
 	}
 
 	// ALLWAYS UPDATE LY IN FRAME AND V-BLANK
 	if gpu.lineCycles >= hBlanckEnd {
 		gpu.ly.Set(gpu.ly.Get() + 1)
-		gpu.lineCycles = gpu.lineCycles - hBlanckEnd
+		gpu.lineCycles -= hBlanckEnd
 	}
 
 	// Compare ly - lyc
@@ -251,7 +244,7 @@ func (gpu *GPU) drawWindowLine(screenLine uint8) {
 		return
 	}
 	firstTileOffset := bgScrollX & 7
-	var winMap uint8 = 0
+	var winMap uint8
 	if gpu.winTileMap.Get() {
 		winMap = 1
 	}
@@ -268,7 +261,15 @@ drawloop:
 		tileMapInfo := gpu._vram.GetTileInfo(winMap, (bgScrollX>>3+i)&0x1F, bgScrollY>>3)
 		palettePrefix := 0b100000 | (tileMapInfo.palette)<<2
 		gpu._vram.GetTileData(tileDataTable, tileMapInfo.tileID, tileMapInfo.bank).
-			appendPixelsLine(gpu.frameBuffer[drawPointer:drawPointer], tileDataLine, firstTileOffset, nbPixelsToDraw, palettePrefix, tileMapInfo.hFlip == 1, tileMapInfo.vFlip == 1)
+			appendPixelsLine(
+				gpu.frameBuffer[drawPointer:drawPointer],
+				tileDataLine,
+				firstTileOffset,
+				nbPixelsToDraw,
+				palettePrefix,
+				tileMapInfo.hFlip == 1,
+				tileMapInfo.vFlip == 1,
+			)
 
 		drawPointer += (8 - uint32(firstTileOffset))
 		nbPixelsDraw += (8 - int(firstTileOffset))
@@ -281,7 +282,6 @@ drawloop:
 	}
 }
 func (gpu *GPU) drawSpriteLine(screenLine uint8) {
-
 	// println("DRAW sprites")
 	var maxHeight uint8 = 8
 	mode8x16 := gpu.spriteSize.Get()
@@ -302,7 +302,6 @@ func (gpu *GPU) drawSpriteLine(screenLine uint8) {
 
 		offscreenX := sprite.X == 0 || sprite.X >= 168 // Offscreen but affects the priority
 		if !offscreenX {
-
 			spriteLine := int(screenLine) - topLeftY
 
 			for j, p := range sprite.GetPixels(&gpu._vram, uint8(spriteLine), 0, mode8x16) {
@@ -320,10 +319,8 @@ func (gpu *GPU) drawSpriteLine(screenLine uint8) {
 				var colorPrefix uint8 = 0b000000
 				if gpu.cgb {
 					colorPrefix |= sprite.ColorPalette << 2
-				} else {
-					if sprite.PaletteNumber == 1 {
-						colorPrefix = 0b000100
-					}
+				} else if sprite.PaletteNumber == 1 {
+					colorPrefix = 0b000100
 				}
 
 				// BG color 0 is always behind OBJ
@@ -337,7 +334,6 @@ func (gpu *GPU) drawSpriteLine(screenLine uint8) {
 			}
 		}
 	}
-
 }
 
 func (gpu *GPU) drawBgLine(screenLine uint8) {
@@ -345,7 +341,7 @@ func (gpu *GPU) drawBgLine(screenLine uint8) {
 	bgScrollX := gpu.scx.Get()
 	firstTileOffset := bgScrollX & 7
 
-	var bgMap uint8 = 0
+	var bgMap uint8
 	if gpu.bgTileMap.Get() {
 		bgMap = 1
 	}
@@ -364,7 +360,15 @@ drawloop:
 		palettePrefix := 0b100000 | (tileMapInfo.palette)<<2
 
 		gpu._vram.GetTileData(tileDataTable, tileMapInfo.tileID, tileMapInfo.bank).
-			appendPixelsLine(gpu.frameBuffer[drawPointer:drawPointer], tileDataLine, firstTileOffset, nbPixelsToDraw, palettePrefix, tileMapInfo.hFlip == 1, tileMapInfo.vFlip == 1)
+			appendPixelsLine(
+				gpu.frameBuffer[drawPointer:drawPointer],
+				tileDataLine,
+				firstTileOffset,
+				nbPixelsToDraw,
+				palettePrefix,
+				tileMapInfo.hFlip == 1,
+				tileMapInfo.vFlip == 1,
+			)
 
 		drawPointer += (8 - uint32(firstTileOffset))
 		nbPixelsDraw += (8 - int(firstTileOffset))

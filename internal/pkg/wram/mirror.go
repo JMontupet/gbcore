@@ -6,7 +6,7 @@ type TranslatedWram struct {
 	memory *WRam
 }
 
-func (m *TranslatedWram) translateAddr(addr uint16) uint16 {
+func (*TranslatedWram) translateAddr(addr uint16) uint16 {
 	return uint16(int32(addr) + mirrorOffset)
 }
 

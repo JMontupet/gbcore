@@ -20,7 +20,7 @@ func (oam *oam) GetSprite(id uint8) *Sprite {
 	return &oam._sprites[id]
 }
 
-func (oam *oam) Read(addr uint16) uint8 {
+func (*oam) Read(_ uint16) uint8 {
 	// No reason to read sprites info, but if needed :
 	panic("TODO : READ SPRITE DATA")
 	// return oam.Data[addr-oamOffset]
@@ -31,7 +31,6 @@ func (oam *oam) Write(addr uint16, value uint8) {
 }
 
 func (oam *oam) internalWrite(addr uint16, value uint8) {
-
 	spriteID := (addr - oamOffset) >> 2
 	spriteByte := (addr - oamOffset) & 3
 	switch spriteByte {
@@ -53,8 +52,8 @@ func (oam *oam) internalWrite(addr uint16, value uint8) {
 }
 
 func newOAM() oam {
-	oam := oam{}
-	return oam
+	oamRes := oam{}
+	return oamRes
 }
 
 type Sprite struct {
@@ -101,7 +100,9 @@ func (t *Sprite) GetPixels(vram *gbVRAM, line uint8, offset uint8, mode8x16 bool
 		}
 	}
 	var buff [8]uint8
-	tilePixels := vram.GetTileData(true, tileID, t.BankNumber).appendPixelsLine(buff[:0], line, offset, 8, 0, false, false)
+	tilePixels := vram.
+		GetTileData(true, tileID, t.BankNumber).
+		appendPixelsLine(buff[:0], line, offset, 8, 0, false, false)
 	pixels := make([]uint8, len(tilePixels))
 	copy(pixels, tilePixels)
 	if t.XFlip {

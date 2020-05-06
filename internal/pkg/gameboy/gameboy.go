@@ -41,11 +41,11 @@ type gameboy struct {
 }
 
 func (gb *gameboy) Run() {
-
 	const nbRefreshPerFrame = constants.InputRefreshPerFrame
 	const frameDiv = 154 / nbRefreshPerFrame
 
-	ticker := time.Tick(time.Duration(math.Round(1000000000 / constants.ScreenRefreshRate / nbRefreshPerFrame)))
+	ticker := time.NewTicker(time.Duration(math.Round(1000000000 / constants.ScreenRefreshRate / nbRefreshPerFrame)))
+	defer ticker.Stop()
 
 	prevLine := uint8(0)
 	for {
@@ -64,11 +64,10 @@ func (gb *gameboy) Run() {
 
 		if line%frameDiv == 0 && prevLine%frameDiv != 0 { // 0 - 153
 			gb.joypad.UpdateInput(uint8(gb.inputsManager.CurrentInput()))
-			<-ticker
+			<-ticker.C
 		}
 		prevLine = line
 	}
-
 }
 
 func NewGameBoy(
@@ -80,26 +79,26 @@ func NewGameBoy(
 ) GameBoy {
 	cgb := cartridge.ReadCGBCompatible(cart)
 
-	io := ioports.NewGBIOPorts()
-	timers := timers.NewTimers(io)
-	hram := hram.NewGBHRAM()
-	wram := wram.NewWram(io)
-	interrupt := interrupt.NewInterrupt(io)
-	joypad := joypad.NewJoypad(io)
+	gbIO := ioports.NewGBIOPorts()
+	gbTImers := timers.NewTimers(gbIO)
+	gbHRAM := hram.NewGBHRAM()
+	gbWRAM := wram.NewWram(gbIO)
+	gbInterrupt := interrupt.NewInterrupt(gbIO)
+	gbJoypad := joypad.NewJoypad(gbIO)
 
 	unusableAddr := unusableaddr.NewUnusableAddr()
-	gpu := gpu.NewGBGPU(io, renderer, cgb)
-	mmu := mmu.NewMMU(cart, gpu, io, hram, wram, interrupt, joypad, unusableAddr)
-	proc := cpu.NewCPU(mmu, interrupt)
-	apu := audio.NewAPU(io, audioPlayer)
+	gbGPU := gpu.NewGBGPU(gbIO, renderer, cgb)
+	gbMMU := mmu.NewMMU(cart, gbGPU, gbIO, gbHRAM, gbWRAM, gbInterrupt, gbJoypad, unusableAddr)
+	proc := cpu.NewCPU(gbMMU, gbInterrupt)
+	apu := audio.NewAPU(gbIO, audioPlayer)
 
 	return &gameboy{
 		cpu:           proc,
-		gpu:           gpu,
+		gpu:           gbGPU,
 		apu:           apu,
-		mmu:           mmu,
-		timers:        timers,
-		joypad:        joypad,
+		mmu:           gbMMU,
+		timers:        gbTImers,
+		joypad:        gbJoypad,
 		inputsManager: inputsManager,
 	}
 }

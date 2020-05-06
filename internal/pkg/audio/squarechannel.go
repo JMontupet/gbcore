@@ -11,8 +11,8 @@ type SquareChannel struct {
 	counter uint16 // If counter >= Timer -> patternPosition++ % 8; counter=0
 
 	////// Frame Sequencer //////
-	sequencer        uint16
-	sequencerCounter uint16
+	// sequencer        uint16
+	// sequencerCounter uint16
 
 	////// Sample Counter //////
 	soundLength        uint16
@@ -42,7 +42,7 @@ func (sc *SquareChannel) Tick() uint8 {
 	if !sc.started {
 		return 0
 	}
-	var sampleValue uint8 = 0
+	var sampleValue uint8
 
 	// SAMPLE VALUE
 	if sc.pattern[sc.patternSelected][sc.patternPosition] {

@@ -25,7 +25,7 @@ func (pm *palettesManager) setPalettes(colors *coreio.FrameColors) {
 	if pm.cgb {
 		var palettePointer uint16 = 0b100000 * 3
 		for i := 0; i < 64; i += 2 {
-			var color uint16 = uint16(pm.bgPaletteData[i]) | uint16(pm.bgPaletteData[i+1])<<8
+			var color = uint16(pm.bgPaletteData[i]) | uint16(pm.bgPaletteData[i+1])<<8
 			colors[palettePointer] = (uint8(color) & 0x1F) << 3
 			palettePointer++
 			colors[palettePointer] = (uint8(color>>5) & 0x1F) << 3
@@ -36,7 +36,7 @@ func (pm *palettesManager) setPalettes(colors *coreio.FrameColors) {
 
 		palettePointer = 0b000000 * 3
 		for i := 0; i < 64; i += 2 {
-			var color uint16 = uint16(pm.spritePaletteData[i]) | uint16(pm.spritePaletteData[i+1])<<8
+			var color = uint16(pm.spritePaletteData[i]) | uint16(pm.spritePaletteData[i+1])<<8
 			colors[palettePointer] = (uint8(color) & 0x1F) << 3
 			palettePointer++
 			colors[palettePointer] = (uint8(color>>5) & 0x1F) << 3
@@ -44,9 +44,10 @@ func (pm *palettesManager) setPalettes(colors *coreio.FrameColors) {
 			colors[palettePointer] = (uint8(color>>10) & 0x1F) << 3
 			palettePointer++
 		}
-	} else {
-		// panic("TODO : NON CGB PALETTES")
 	}
+	//  else {
+	// 	panic("TODO : NON CGB PALETTES")
+	// }
 }
 
 func (pm *palettesManager) Write(addr uint16, value uint8) {

@@ -19,7 +19,7 @@ func (c *romOnly) Read(addr uint16) uint8 {
 	}
 }
 
-func (c *romOnly) Write(addr uint16, value uint8) {
+func (*romOnly) Write(addr uint16, value uint8) {
 	switch {
 	case addr >= 0x0000 && addr < 0x8000: // ROM CART
 		fmt.Printf("CART ROM IS READ ONLY !!! %X : %X\n", addr, value)

@@ -6,7 +6,7 @@ import (
 
 type nullFrameDrawer struct{}
 
-func (p *nullFrameDrawer) SwapFrameBuffer(
+func (*nullFrameDrawer) SwapFrameBuffer(
 	frameBuffer *coreio.FrameBuffer, colors *coreio.FrameColors,
 ) (*coreio.FrameBuffer, *coreio.FrameColors) {
 	return frameBuffer, colors

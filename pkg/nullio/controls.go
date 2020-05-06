@@ -6,7 +6,7 @@ import (
 
 type nullInputsManager struct{}
 
-func (p *nullInputsManager) CurrentInput() coreio.KeyInputState {
+func (*nullInputsManager) CurrentInput() coreio.KeyInputState {
 	return 0x00
 }
 

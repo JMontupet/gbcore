@@ -31,7 +31,7 @@ func NewEmulator(
 	inputsManager coreio.InputsManager,
 	audioPlayer coreio.AudioPlayer,
 ) (Emulator, error) {
-	cartridge, err := cartridge.NewCartridge(gameData)
+	cart, err := cartridge.NewCartridge(gameData)
 	if err != nil {
 		return nil, err
 	}
@@ -49,9 +49,9 @@ func NewEmulator(
 	}
 
 	return &gbcEmulator{
-		cartidge: cartridge,
+		cartidge: cart,
 		gbc: gameboy.NewGameBoy(
-			cartridge,
+			cart,
 			renderer,
 			inputsManager,
 			audioPlayer,

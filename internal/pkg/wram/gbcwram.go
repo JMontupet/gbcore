@@ -20,7 +20,7 @@ type WRam struct {
 func (io *WRam) getBank() uint8 {
 	bank := io.ff70.Get()
 	if bank != 0 {
-		bank = bank - 1 // Translate to array index
+		bank-- // Translate to array index
 	}
 	// Bank 0 is interpreted as bank 1. No translation needed
 	return bank

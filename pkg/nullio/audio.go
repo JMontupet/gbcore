@@ -6,7 +6,7 @@ import (
 
 type nullAudioPlayer struct{}
 
-func (p *nullAudioPlayer) SwapAudioBuffer(data []uint8) []uint8 {
+func (*nullAudioPlayer) SwapAudioBuffer(data []uint8) []uint8 {
 	return data
 }
 

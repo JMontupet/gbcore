@@ -46,7 +46,7 @@ func (io *IOPorts) NewBit5Ptr(addr uint16) *BitPtr { return &BitPtr{io, addr, 0x
 func (io *IOPorts) NewBit6Ptr(addr uint16) *BitPtr { return &BitPtr{io, addr, 0x40} }
 func (io *IOPorts) NewBit7Ptr(addr uint16) *BitPtr { return &BitPtr{io, addr, 0x80} }
 
-// NewGBIOPorts create new IOPorts, basicaly a simple Memory implementation.
+// NewGBIOPorts create new IOPorts, basically a simple Memory implementation.
 func NewGBIOPorts() *IOPorts {
 	return &IOPorts{}
 }

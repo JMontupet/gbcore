@@ -117,13 +117,13 @@ var instructionList = instructions{
 	0xF2: func(cpu *CPU) uint8 { cpu.regs.SetA(cpu.mmu.Read(uint16(cpu.regs.GetC()) | 0xFF00)); return 2 }, // LD A, (C)
 
 	// LD (C), A
-	0xE2: func(cpu *CPU) uint8 { cpu.mmu.Write(uint16(cpu.regs.GetC())|0xFF00, cpu.regs.GetA()); return 2 }, // LD (C), A
+	0xE2: func(cpu *CPU) uint8 { cpu.mmu.Write(uint16(cpu.regs.GetC())|0xFF00, cpu.regs.GetA()); return 2 }, // LD (C),A
 
 	// LD A, (n)
 	0xF0: func(cpu *CPU) uint8 { cpu.regs.SetA(cpu.mmu.Read(uint16(cpu.readUint8()) | 0xFF00)); return 3 }, // LD A, (n)
 
 	// LD (n), A
-	0xE0: func(cpu *CPU) uint8 { cpu.mmu.Write(uint16(cpu.readUint8())|0xFF00, cpu.regs.GetA()); return 3 }, // LD (n), A
+	0xE0: func(cpu *CPU) uint8 { cpu.mmu.Write(uint16(cpu.readUint8())|0xFF00, cpu.regs.GetA()); return 3 }, // LD (n),A
 
 	// LD (r), A
 	0x02: func(cpu *CPU) uint8 { cpu.mmu.Write(cpu.regs.GetBC(), cpu.regs.GetA()); return 2 }, // LD (BC), A
@@ -196,7 +196,7 @@ var instructionList = instructions{
 	0xE5: func(cpu *CPU) uint8 { push(cpu, cpu.regs.GetHL()); return 4 }, // PUSH HL
 
 	// POP nn
-	0xF1: func(cpu *CPU) uint8 { cpu.regs.SetAF(pop(cpu) & 0xFFF0); return 3 }, // POP AF // /!\ 4 bits of unused flags set to 0
+	0xF1: func(cpu *CPU) uint8 { cpu.regs.SetAF(pop(cpu) & 0xFFF0); return 3 }, // POP AF 4bits of unused flags set to 0
 	0xC1: func(cpu *CPU) uint8 { cpu.regs.SetBC(pop(cpu)); return 3 },          // POP BC
 	0xD1: func(cpu *CPU) uint8 { cpu.regs.SetDE(pop(cpu)); return 3 },          // POP DE
 	0xE1: func(cpu *CPU) uint8 { cpu.regs.SetHL(pop(cpu)); return 3 },          // POP HL
@@ -368,10 +368,18 @@ var instructionList = instructions{
 	0xE9: func(cpu *CPU) uint8 { cpu.regs.SetPC(cpu.regs.GetHL()); return 1 }, // JP (HL)
 
 	// JP cc, nn
-	0xC2: func(cpu *CPU) uint8 { return jumpIF(cpu, !cpu.regs.GetFlag(registers.FlagZERO), cpu.readUint16()) },  // JP NZ, nn
-	0xCA: func(cpu *CPU) uint8 { return jumpIF(cpu, cpu.regs.GetFlag(registers.FlagZERO), cpu.readUint16()) },   // JP Z, nn
-	0xD2: func(cpu *CPU) uint8 { return jumpIF(cpu, !cpu.regs.GetFlag(registers.FlagCARRY), cpu.readUint16()) }, // JP NC, nn
-	0xDA: func(cpu *CPU) uint8 { return jumpIF(cpu, cpu.regs.GetFlag(registers.FlagCARRY), cpu.readUint16()) },  // JP C, nn
+	0xC2: func(cpu *CPU) uint8 {
+		return jumpIF(cpu, !cpu.regs.GetFlag(registers.FlagZERO), cpu.readUint16())
+	}, // JP NZ, nn
+	0xCA: func(cpu *CPU) uint8 {
+		return jumpIF(cpu, cpu.regs.GetFlag(registers.FlagZERO), cpu.readUint16())
+	}, // JP Z, nn
+	0xD2: func(cpu *CPU) uint8 {
+		return jumpIF(cpu, !cpu.regs.GetFlag(registers.FlagCARRY), cpu.readUint16())
+	}, // JP NC, nn
+	0xDA: func(cpu *CPU) uint8 {
+		return jumpIF(cpu, cpu.regs.GetFlag(registers.FlagCARRY), cpu.readUint16())
+	}, // JP C, nn
 
 	// JR n
 	0x18: func(cpu *CPU) uint8 { jumpOffset(cpu, cpu.readUint8()); return 2 }, // JR n
@@ -395,10 +403,18 @@ var instructionList = instructions{
 	0xCD: func(cpu *CPU) uint8 { call(cpu, cpu.readUint16()); return 3 }, // CALL nn
 
 	// CALL cc,nn
-	0xC4: func(cpu *CPU) uint8 { return callIF(cpu, !cpu.regs.GetFlag(registers.FlagZERO), cpu.readUint16()) },  // CALL NZ, nn
-	0xCC: func(cpu *CPU) uint8 { return callIF(cpu, cpu.regs.GetFlag(registers.FlagZERO), cpu.readUint16()) },   // CALL Z, nn
-	0xD4: func(cpu *CPU) uint8 { return callIF(cpu, !cpu.regs.GetFlag(registers.FlagCARRY), cpu.readUint16()) }, // CALL NC nn
-	0xDC: func(cpu *CPU) uint8 { return callIF(cpu, cpu.regs.GetFlag(registers.FlagCARRY), cpu.readUint16()) },  // CALL C, nn
+	0xC4: func(cpu *CPU) uint8 {
+		return callIF(cpu, !cpu.regs.GetFlag(registers.FlagZERO), cpu.readUint16())
+	}, // CALL NZ, nn
+	0xCC: func(cpu *CPU) uint8 {
+		return callIF(cpu, cpu.regs.GetFlag(registers.FlagZERO), cpu.readUint16())
+	}, // CALL Z, nn
+	0xD4: func(cpu *CPU) uint8 {
+		return callIF(cpu, !cpu.regs.GetFlag(registers.FlagCARRY), cpu.readUint16())
+	}, // CALL NC nn
+	0xDC: func(cpu *CPU) uint8 {
+		return callIF(cpu, cpu.regs.GetFlag(registers.FlagCARRY), cpu.readUint16())
+	}, // CALL C, nn
 
 	///// Restarts //////
 	// RST n
@@ -469,7 +485,6 @@ func cpl(cpu *CPU) {
 	cpu.regs.SetA(^(cpu.regs.GetA()))
 	cpu.regs.SetFlag(registers.FlagSUB, true)
 	cpu.regs.SetFlag(registers.FlagHCARRY, true)
-
 }
 
 func daa(cpu *CPU) {
@@ -593,7 +608,7 @@ func pop(cpu *CPU) uint16 {
 }
 
 func add8(cpu *CPU, n uint8, withCarry bool) {
-	var carry uint8 = 0
+	var carry uint8
 	if withCarry && cpu.regs.GetFlag(registers.FlagCARRY) {
 		carry = 1
 	}
@@ -614,7 +629,7 @@ func inc8(cpu *CPU, value uint8) uint8 {
 }
 
 func sub8(cpu *CPU, n uint8, withCarry bool) {
-	var carry uint8 = 0
+	var carry uint8
 	if withCarry && cpu.regs.GetFlag(registers.FlagCARRY) {
 		carry = 1
 	}
@@ -656,7 +671,6 @@ func or8(cpu *CPU, n uint8) {
 	cpu.regs.SetFlag(registers.FlagHCARRY, false)
 	cpu.regs.SetFlag(registers.FlagCARRY, false)
 	cpu.regs.SetA(a)
-
 }
 
 func xor8(cpu *CPU, n uint8) {
@@ -666,7 +680,6 @@ func xor8(cpu *CPU, n uint8) {
 	cpu.regs.SetFlag(registers.FlagHCARRY, false)
 	cpu.regs.SetFlag(registers.FlagCARRY, false)
 	cpu.regs.SetA(a)
-
 }
 
 func addHL(cpu *CPU, n uint16) {

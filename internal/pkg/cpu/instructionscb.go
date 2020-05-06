@@ -445,11 +445,11 @@ func swap(cpu *CPU, value uint8) uint8 {
 	return result
 }
 
-func res(cpu *CPU, value uint8, mask uint8) uint8 {
+func res(_ *CPU, value uint8, mask uint8) uint8 {
 	return value & ^mask
 }
 
-func set(cpu *CPU, value uint8, mask uint8) uint8 {
+func set(_ *CPU, value uint8, mask uint8) uint8 {
 	return value | mask
 }
 

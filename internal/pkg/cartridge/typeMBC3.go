@@ -77,9 +77,9 @@ func (c *mbc3) changeROMBank(v uint8) {
 	if value > c.nbROMBank {
 		panic(fmt.Sprintf("ROM BANK 0x%02X DOES NOT EXIST. MAX : 0x%02X", value, c.nbROMBank))
 	}
-	if value&0x7F != c.romBank {
-		// fmt.Printf("CHANGE CARTRIDGE ROM BANK TO 0x%02X\n", value)
-	}
+	// if value&0x7F != c.romBank {
+	// fmt.Printf("CHANGE CARTRIDGE ROM BANK TO 0x%02X\n", value)
+	// }
 	if value == 0 {
 		c.romBank = 1
 		return
@@ -105,7 +105,6 @@ func newMBC3(data []byte) Cartridge {
 	}
 
 	switch romSize := ReadROMSize(cartridge); romSize {
-
 	case 0x05: // 05h -		1MByte (64 banks)
 		cartridge.nbROMBank = 64
 	case 0x06: // 06h -   2MByte (128 banks) - only 125 banks used by MBC1

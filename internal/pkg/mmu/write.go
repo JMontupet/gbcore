@@ -25,7 +25,7 @@ func (m *MMU) Write(addr uint16, value uint8) {
 		m.gpu.Write(addr, value)
 
 	////// Cartridge RAM //////
-	case addr >= memorymap.ExternalRamStart && addr <= memorymap.ExternalRamEnd:
+	case addr >= memorymap.ExternalRAMStart && addr <= memorymap.ExternalRAMEnd:
 		m.cartridge.Write(addr, value)
 
 	////// WRAM bank 0 + WRAM bank 1 ( ~ 7 on CGB ) //////

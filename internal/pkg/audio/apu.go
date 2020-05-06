@@ -67,8 +67,8 @@ func (apu *APU) Tick(cycles uint8) {
 		if currentResamplerPosition >= resampleFactor {
 			vS01 := uint32(apu.nr50.Get() & 0x07)
 			vS02 := uint32(apu.nr50.Get() >> 4 & 0x07)
-			vS01 = vS01 / 7
-			vS02 = vS02 / 7
+			vS01 /= 7
+			vS02 /= 7
 
 			out01 := make([]uint8, 4)
 			out02 := make([]uint8, 4)

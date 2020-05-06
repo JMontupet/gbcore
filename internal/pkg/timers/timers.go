@@ -59,7 +59,6 @@ func (t *Timers) Tick(cycles uint8) {
 			t.timaCount %= clock
 		}
 	}
-
 }
 
 func (t *Timers) cyclesTIMAInc() uint {

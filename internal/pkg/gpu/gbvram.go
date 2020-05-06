@@ -20,9 +20,9 @@ const (
 	tileMap1Start uint16 = 0x9C00
 	tileMap1End   uint16 = 0x9FFF
 
-	vramEnd uint16 = memorymap.VRamEnd // 0x9FFF
+	// vramEnd uint16 = memorymap.VRamEnd // 0x9FFF
 
-	tileSize uint16 = 0x10
+	// tileSize uint16 = 0x10
 )
 
 type gbVRAM struct {

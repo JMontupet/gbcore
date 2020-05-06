@@ -66,7 +66,7 @@ func (vdma *VramDmaManager) Write(addr uint16, value uint8) {
 	}
 }
 
-func (vdma *VramDmaManager) Tick(cycles uint8) {
+func (vdma *VramDmaManager) Tick(_ uint8) {
 	if vdma.transferActive {
 		for i := uint16(0); i < vdma.transferLength; i++ {
 			vdma.mmu.Write(vdma.dstAddr+i, vdma.mmu.Read(vdma.srcAddr+i))

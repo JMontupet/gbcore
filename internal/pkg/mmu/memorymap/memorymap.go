@@ -18,8 +18,8 @@ const (
 	VRamEnd   uint16 = 0x9FFF
 
 	// Cartridge RAM (switchable) (8KB)
-	ExternalRamStart uint16 = 0xA000
-	ExternalRamEnd   uint16 = 0xBFFF
+	ExternalRAMStart uint16 = 0xA000
+	ExternalRAMEnd   uint16 = 0xBFFF
 
 	// Internal WorkRAM bank 0 (4KB)
 	WRam0Start uint16 = 0xC000
@@ -30,8 +30,8 @@ const (
 	WRam1End   uint16 = 0xDFFF
 
 	// Mirror of C000~DDFF
-	MirrorRamStart uint16 = 0xE000
-	MirrorRamEnd   uint16 = 0xFDFF
+	MirrorRAMStart uint16 = 0xE000
+	MirrorRAMEnd   uint16 = 0xFDFF
 
 	// OAM
 	OAMStart uint16 = 0xFE00

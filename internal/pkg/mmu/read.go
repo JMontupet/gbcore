@@ -21,7 +21,7 @@ func (m *MMU) Read(addr uint16) uint8 {
 		return m.gpu.Read(addr)
 
 	////// Cartridge RAM //////
-	case addr >= memorymap.ExternalRamStart && addr <= memorymap.ExternalRamEnd:
+	case addr >= memorymap.ExternalRAMStart && addr <= memorymap.ExternalRAMEnd:
 		return m.cartridge.Read(addr)
 
 	////// WRAM bank 0 + WRAM bank 1 ( ~ 7 on CGB ) //////

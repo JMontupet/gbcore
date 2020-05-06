@@ -7,7 +7,14 @@ type tile [8 * 2]uint8
 // N (offset) first pixels can be skiped (max 7)
 // N (nb) pixels only can be append (max 8)
 // A colorPrefix can be added to each pixels (cf. palette manager)
-func (t *tile) appendPixelsLine(buff []uint8, line uint8, offset uint8, nb uint8, colorPrefix uint8, hFlip bool, vFlip bool) []uint8 {
+func (t *tile) appendPixelsLine(
+	buff []uint8,
+	line uint8,
+	offset uint8,
+	nb uint8,
+	colorPrefix uint8,
+	hFlip bool, vFlip bool,
+) []uint8 {
 	if vFlip {
 		line = uint8((int16(line) - 7) * -1)
 	}

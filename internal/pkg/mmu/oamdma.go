@@ -59,5 +59,4 @@ func (odma *OamDmaManager) Tick(cycles uint8) {
 	for i := uint16(0); i < nbByte; i++ {
 		odma.mmu.Write(addrDst+i, odma.mmu.Read(addrSrc+i))
 	}
-	return
 }

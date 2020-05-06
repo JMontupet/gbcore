@@ -6,13 +6,13 @@ import (
 )
 
 func TestTile(t *testing.T) {
-	tile := tile{
+	tl := tile{
 		0b00000000,
 		0b11111111,
 	}
 
 	var buff [8]uint8
-	pixels := tile.appendPixelsLine(buff[:0], 0, 0, 8, 0b100000, false, false)
+	pixels := tl.appendPixelsLine(buff[:0], 0, 0, 8, 0b100000, false, false)
 
 	if l := len(pixels); l != 8 {
 		t.Fatalf("Pixels number : expected: %d, got: %d", 8, l)
@@ -26,12 +26,12 @@ func TestTile(t *testing.T) {
 }
 
 func BenchmarkTile(b *testing.B) {
-	tile := tile{
+	tl := tile{
 		0b00000000,
 		0b11111111,
 	}
 	var buff [8]uint8
 	for i := 0; i < b.N; i++ {
-		tile.appendPixelsLine(buff[:0], 0, 0, 8, 0b100000, false, false)
+		tl.appendPixelsLine(buff[:0], 0, 0, 8, 0b100000, false, false)
 	}
 }
