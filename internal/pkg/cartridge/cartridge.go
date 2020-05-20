@@ -24,43 +24,46 @@ func NewCartridge(data []byte) (Cartridge, error) {
 	case 0x03: // ROM_MBC1_RAM_Batt
 		return newMBC1(data), nil
 	case 0x10: // ROM_MBC3_Timer_RAM_Batt
-		return newMBC3(data), nil
+		return newMBC3(data)
 	case 0x13: // ROM_MBC3_RAM_Batt
-		return newMBC3(data), nil
+		return newMBC3(data)
 	case 0x19: // ROM_MBC5
-		return newMBC5(data), nil
+		return newMBC5(data)
 	case 0x1B: // ROM_MBC5_RAM_Batt
-		return newMBC5(data), nil
+		return newMBC5(data)
 	default:
 		return nil, fmt.Errorf("CARTRIDGE TYPE NOT IMPLEMENTED : 0x%02X", cType)
 	}
 }
 
-// const (
-// 	ROM_Only                 CartridgeType = 0x00
-// 	ROM_MBC1                 CartridgeType = 0x01
-// 	ROM_MBC1_RAM             CartridgeType = 0x02
-// 	ROM_MBC1_RAM_Batt        CartridgeType = 0x03
-// 	ROM_MBC                  CartridgeType = 0x05
-// 	ROM_MBC2_Batt            CartridgeType = 0x06
-// 	ROM_RAM                  CartridgeType = 0x08
-// 	ROM_RAM_Batt             CartridgeType = 0x09
-// 	ROM_MMM01                CartridgeType = 0x0B
-// 	ROM_MMM01_RAM            CartridgeType = 0x0C
-// 	ROM_MMM01_RAM_Batt       CartridgeType = 0x0D
-// 	ROM_MBC3_Timer_Batt      CartridgeType = 0x0F
-// 	ROM_MBC3_Timer_RAM_Batt  CartridgeType = 0x10
-// 	ROM_MBC3                 CartridgeType = 0x11
-// 	ROM_MBC3_RAM             CartridgeType = 0x12
-// 	ROM_MBC3_RAM_Batt        CartridgeType = 0x13
-// 	ROM_MBC5                 CartridgeType = 0x19
-// 	ROM_MBC5_RAM             CartridgeType = 0x1A
-// 	ROM_MBC5_RAM_Batt        CartridgeType = 0x1B
-// 	ROM_MBC5_Rumble          CartridgeType = 0x1C
-// 	ROM_MBC5_Rumble_RAM      CartridgeType = 0x1D
-// 	ROM_MBC5_Rumble_RAM_Batt CartridgeType = 0x1E
-// 	Pocket_Camera            CartridgeType = 0x1F
-// 	Bandai_TAMA5             CartridgeType = 0xFD
-// 	Hudson_HuC_3             CartridgeType = 0xFE
-// 	Hudson_HuC_1             CartridgeType = 0xFF
-// )
+// 00h  ROM ONLY
+// 01h  MBC1
+// 02h  MBC1+RAM
+// 03h  MBC1+RAM+BATTERY
+// 05h  MBC2
+// 06h  MBC2+BATTERY
+// 08h  ROM+RAM
+// 09h  ROM+RAM+BATTERY
+// 0Bh  MMM01
+// 0Ch  MMM01+RAM
+// 0Dh  MMM01+RAM+BATTERY
+// 0Fh  MBC3+TIMER+BATTERY
+// 10h  MBC3+TIMER+RAM+BATTERY
+// 11h  MBC3
+// 12h  MBC3+RAM
+// 13h  MBC3+RAM+BATTERY
+// 19h  MBC5
+// 1Ah  MBC5+RAM
+// 1Bh  MBC5+RAM+BATTERY
+// 1Ch  MBC5+RUMBLE
+// 1Dh  MBC5+RUMBLE+RAM
+// 1Eh  MBC5+RUMBLE+RAM+BATTERY
+// 20h  MBC6
+// 22h  MBC7+SENSOR+RUMBLE+RAM+BATTERY
+// FCh  POCKET CAMERA
+// FDh  BANDAI TAMA5
+// FEh  HuC3
+// FFh  HuC1+RAM+BATTERY
+
+const romBankSize = 0x4000 // 16KB
+const ramBankSize = 0x2000 // 8KB

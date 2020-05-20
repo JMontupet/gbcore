@@ -64,7 +64,7 @@ func (gb *gameboy) Run() {
 
 		if line%frameDiv == 0 && prevLine%frameDiv != 0 { // 0 - 153
 			gb.joypad.UpdateInput(uint8(gb.inputsManager.CurrentInput()))
-			<-ticker.C
+			// <-ticker.C
 		}
 		prevLine = line
 	}

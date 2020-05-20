@@ -5,9 +5,6 @@ import (
 	"log"
 )
 
-const romBankSizeInt uint = 0x4000 // 16KB
-const ramBankSizeInt uint = 0x2000 // 8KB
-
 type mbc1 struct {
 	data      []uint8
 	romBank   uint
@@ -27,12 +24,12 @@ func (c *mbc1) Read(addr uint16) uint8 {
 	case addr >= 0x0000 && addr <= 0x3FFF: // ROM CART FIXED
 		return c.data[addr]
 	case addr >= 0x4000 && addr <= 0x7FFF: // ROM CART BANK N
-		return c.data[uint(addr)-0x4000+c.romBank*romBankSizeInt]
+		return c.data[uint(addr)-0x4000+c.romBank*romBankSize]
 	case addr >= 0xA000 && addr <= 0xBFFF: // CART RAM
 		if !c.ramEnable {
 			return 0x00
 		}
-		return c.ram[uint(addr)-0xA000+c.ramBank*ramBankSizeInt]
+		return c.ram[uint(addr)-0xA000+c.ramBank*ramBankSize]
 	default:
 		log.Fatalf("MEMORY UNREACHABLE : 0x%04X", addr)
 		return 0x00
@@ -45,7 +42,7 @@ func (c *mbc1) Write(addr uint16, value uint8) {
 
 	// 0000-1FFF - RAM Enable
 	case addr >= 0x0000 && addr <= 0x1FFF:
-		c.ramEnable = value&0xF == 0x0A
+		c.ramEnable = value&0x0F == 0x0A
 
 	// 2000-3FFF - ROM Bank Number (Write Only)
 	case addr >= 0x2000 && addr <= 0x3FFF:
