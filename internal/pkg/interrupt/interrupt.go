@@ -2,18 +2,26 @@ package interrupt
 
 import (
 	"github.com/jmontupet/gbcore/internal/pkg/ioports"
+	"github.com/jmontupet/gbcore/internal/pkg/memory"
 )
 
-func (interrupt *Manager) EnableMaster() {
+type Manager interface {
+	memory.Memory
+	GetNext() uint16
+	EnableMaster()
+	DisableMaster()
+}
+
+func (interrupt *manager) EnableMaster() {
 	// fmt.Println("INTERRUPTS ENABLED")
 	interrupt.masterFlag = true
 }
-func (interrupt *Manager) DisableMaster() {
+func (interrupt *manager) DisableMaster() {
 	// fmt.Println("INTERRUPTS DISABLED")
 	interrupt.masterFlag = false
 }
 
-type Manager struct {
+type manager struct {
 	// ME - Interrupt Master Enable Flag
 	masterFlag bool
 
@@ -34,7 +42,7 @@ type Manager struct {
 	iFlag *ioports.Ptr
 }
 
-func (interrupt *Manager) GetNext() (jumpAddr uint16) {
+func (interrupt *manager) GetNext() (jumpAddr uint16) {
 	if interrupt.masterFlag {
 		iFlag := interrupt.iFlag.Get()
 		validInterrupts := iFlag & interrupt.iEnable
@@ -64,16 +72,16 @@ func (interrupt *Manager) GetNext() (jumpAddr uint16) {
 	return jumpAddr // OxOOOO is not a valid interrupt jump address, used as 'NO INTERRUPT' for this function ONLY !!!
 }
 
-func (interrupt *Manager) Read(_ uint16) uint8 {
+func (interrupt *manager) Read(_ uint16) uint8 {
 	return interrupt.iEnable
 }
 
-func (interrupt *Manager) Write(_ uint16, value uint8) {
+func (interrupt *manager) Write(_ uint16, value uint8) {
 	interrupt.iEnable = value
 }
 
-func NewInterrupt(io *ioports.IOPorts) *Manager {
-	interrupt := &Manager{
+func NewInterrupt(io *ioports.IOPorts) Manager {
+	interrupt := &manager{
 		iFlag: io.NewPtr(0xFF0F),
 	}
 	return interrupt

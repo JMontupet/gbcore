@@ -1,0 +1,51 @@
+# From recommended configuration: https://github.com/mgechev/revive#recommended-configuration
+
+ignoreGeneratedHeader = false
+severity = "warning"
+confidence = 0.8
+errorCode = 1
+warningCode = 1
+
+[rule.blank-imports]
+[rule.context-as-argument]
+[rule.context-keys-type]
+[rule.dot-imports]
+[rule.error-return]
+[rule.error-strings]
+[rule.error-naming]
+# [rule.exported]
+[rule.if-return]
+[rule.increment-decrement]
+[rule.var-naming]
+[rule.var-declaration]
+[rule.package-comments]
+[rule.range]
+[rule.receiver-naming]
+[rule.time-naming]
+[rule.unexported-return]
+[rule.indent-error-flow]
+[rule.errorf]
+[rule.empty-block]
+[rule.superfluous-else]
+[rule.unused-parameter]
+[rule.unreachable-code]
+[rule.redefines-builtin-id]
+
+# Extra rules
+[rule.empty-lines]
+[rule.modifies-parameter]
+[rule.modifies-value-receiver]
+[rule.range-val-in-closure]
+[rule.struct-tag]
+[rule.unnecessary-stmt]
+[rule.waitgroup-by-value]
+[rule.line-length-limit]
+  arguments = [120]
+[rule.cyclomatic]
+  arguments = [30]
+[rule.duplicated-imports]
+[rule.import-shadowing]
+[rule.bare-return]
+[rule.unused-receiver]
+[rule.atomic]
+[rule.bool-literal-in-expr]

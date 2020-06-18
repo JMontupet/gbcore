@@ -26,7 +26,9 @@ import (
 )
 
 type GameBoy interface {
-	Run()
+	Start()
+	Stop()
+	Pause()
 }
 
 type gameboy struct {
@@ -38,36 +40,87 @@ type gameboy struct {
 	timers *timers.Timers
 
 	inputsManager coreio.InputsManager
+
+	stopCh  chan struct{}
+	pauseCh chan struct{}
 }
 
-func (gb *gameboy) Run() {
+func (gb *gameboy) Start() {
+	// Not running
+	if gb.stopCh != nil {
+		return
+	}
+	go gb.run()
+}
+
+func (gb *gameboy) run() {
+	gb.stopCh = make(chan struct{})
+	gb.pauseCh = make(chan struct{})
+
 	const nbRefreshPerFrame = constants.InputRefreshPerFrame
 	const frameDiv = 154 / nbRefreshPerFrame
+	prevLine := uint8(0)
 
 	ticker := time.NewTicker(time.Duration(math.Round(1000000000 / constants.ScreenRefreshRate / nbRefreshPerFrame)))
 	defer ticker.Stop()
 
-	prevLine := uint8(0)
+gbLoop:
 	for {
-		nbClockUsed := gb.cpu.Tick()
-		var clockMul uint8 = 4
-		if gb.cpu.DoubleSpeed {
-			clockMul = 2
+		select {
+		case <-gb.stopCh:
+			close(gb.pauseCh)
+			close(gb.stopCh)
+			gb.stopCh = nil
+			gb.pauseCh = nil
+			break gbLoop
+		case <-gb.pauseCh:
+			select {
+			case <-gb.pauseCh:
+			case <-gb.stopCh:
+				close(gb.pauseCh)
+				close(gb.stopCh)
+				gb.stopCh = nil
+				gb.pauseCh = nil
+				break gbLoop
+			}
+		default:
+			nbClockUsed := gb.cpu.Tick()
+			var clockMul uint8 = 4
+			if gb.cpu.DoubleSpeed {
+				clockMul = 2
+			}
+
+			line := gb.gpu.Tick(nbClockUsed * 4)
+			gb.timers.Tick(nbClockUsed * clockMul)
+			gb.mmu.GetOamDMA().Tick(nbClockUsed * clockMul)
+			gb.mmu.GetVramDMA().Tick(nbClockUsed * 4)
+
+			// gb.apu.Tick(nbClockUsed)
+
+			if line%frameDiv == 0 && prevLine%frameDiv != 0 { // 0 - 153
+				gb.joypad.UpdateInput(uint8(gb.inputsManager.CurrentInput()))
+				<-ticker.C
+			}
+			prevLine = line
 		}
-
-		line := gb.gpu.Tick(nbClockUsed * 4)
-		gb.timers.Tick(nbClockUsed * clockMul)
-		gb.mmu.GetOamDMA().Tick(nbClockUsed * clockMul)
-		gb.mmu.GetVramDMA().Tick(nbClockUsed * 4)
-
-		// gb.apu.Tick(nbClockUsed)
-
-		if line%frameDiv == 0 && prevLine%frameDiv != 0 { // 0 - 153
-			gb.joypad.UpdateInput(uint8(gb.inputsManager.CurrentInput()))
-			// <-ticker.C
-		}
-		prevLine = line
 	}
+}
+
+func (gb *gameboy) Stop() {
+	// Not running
+	if gb.stopCh == nil {
+		return
+	}
+	gb.stopCh <- struct{}{}
+	gb.cpu.Reset()
+}
+
+func (gb *gameboy) Pause() {
+	// Not running
+	if gb.pauseCh == nil {
+		return
+	}
+	gb.pauseCh <- struct{}{}
 }
 
 func NewGameBoy(

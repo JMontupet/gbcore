@@ -11,7 +11,7 @@ import (
 )
 
 type Emulator interface {
-	Run()
+	gameboy.GameBoy
 	GetGameTitle() string
 }
 
@@ -20,7 +20,9 @@ type gbcEmulator struct {
 	cartidge cartridge.Cartridge
 }
 
-func (e *gbcEmulator) Run() { e.gbc.Run() }
+func (e *gbcEmulator) Start() { e.gbc.Start() }
+func (e *gbcEmulator) Stop()  { e.gbc.Stop() }
+func (e *gbcEmulator) Pause() { e.gbc.Pause() }
 func (e *gbcEmulator) GetGameTitle() string {
 	return cartridge.ReadTitle(e.cartidge)
 }

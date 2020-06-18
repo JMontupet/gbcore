@@ -10,8 +10,6 @@ type instruction func(*CPU) (clockUsed uint8)
 
 type instructions [256]instruction
 
-// type instructions map[uint8]instruction
-
 var instructionList = instructions{
 	0x00: func(cpu *CPU) uint8 { return 1 },             // NOP
 	0x10: func(cpu *CPU) uint8 { cpu.stop(); return 1 }, // STOP

@@ -40,7 +40,7 @@ func NewMMU(
 	gbIO *ioports.IOPorts,
 	gbHRAM *hram.HRAM,
 	gbRAM *wram.WRam,
-	gbInterrupt *interrupt.Manager,
+	gbInterrupt interrupt.Manager,
 	gbJoypad *joypad.Joypad,
 	gbUnusableAddr *unusableaddr.UnusableAddr,
 ) *MMU {
