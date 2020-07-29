@@ -304,7 +304,9 @@ func (gpu *GPU) drawSpriteLine(screenLine uint8) {
 		if !offscreenX {
 			spriteLine := int(screenLine) - topLeftY
 
-			for j, p := range sprite.GetPixels(&gpu._vram, uint8(spriteLine), 0, mode8x16) {
+			var fixedBuf [8]uint8
+			buff := fixedBuf[:0]
+			for j, p := range sprite.GetPixels(buff, &gpu._vram, uint8(spriteLine), 0, mode8x16) {
 				pixelX := topLeftX + j
 				if pixelX >= 160 {
 					break

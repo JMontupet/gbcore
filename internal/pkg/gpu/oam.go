@@ -81,7 +81,7 @@ type Sprite struct {
 	// ***/CGB MODE ***
 }
 
-func (t *Sprite) GetPixels(vram *gbVRAM, line uint8, offset uint8, mode8x16 bool) []uint8 {
+func (t *Sprite) GetPixels(buff []uint8, vram *gbVRAM, line uint8, offset uint8, mode8x16 bool) []uint8 {
 	tileID := t.TileID
 	if t.YFlip {
 		if mode8x16 {
@@ -99,17 +99,17 @@ func (t *Sprite) GetPixels(vram *gbVRAM, line uint8, offset uint8, mode8x16 bool
 			tileID &= 0xFE
 		}
 	}
-	var buff [8]uint8
-	tilePixels := vram.
+	// var buff [8]uint8
+	buff = vram.
 		GetTileData(true, tileID, t.BankNumber).
-		appendPixelsLine(buff[:0], line, offset, 8, 0, false, false)
-	pixels := make([]uint8, len(tilePixels))
-	copy(pixels, tilePixels)
+		appendPixelsLine(buff, line, offset, 8, 0, false, false)
+	// pixels := make([]uint8, len(tilePixels))
+	// copy(pixels, tilePixels)
 	if t.XFlip {
-		for i := len(pixels)/2 - 1; i >= 0; i-- {
-			opp := len(pixels) - 1 - i
-			pixels[i], pixels[opp] = pixels[opp], pixels[i]
+		for i := len(buff)/2 - 1; i >= 0; i-- {
+			opp := len(buff) - 1 - i
+			buff[i], buff[opp] = buff[opp], buff[i]
 		}
 	}
-	return pixels
+	return buff
 }
