@@ -64,45 +64,45 @@ func (gb *gameboy) run() {
 	ticker := time.NewTicker(time.Duration(math.Round(1000000000 / constants.ScreenRefreshRate / nbRefreshPerFrame)))
 	defer ticker.Stop()
 
-gbLoop:
+	// gbLoop:
 	for {
-		select {
-		case <-gb.stopCh:
-			close(gb.pauseCh)
-			close(gb.stopCh)
-			gb.stopCh = nil
-			gb.pauseCh = nil
-			break gbLoop
-		case <-gb.pauseCh:
-			select {
-			case <-gb.pauseCh:
-			case <-gb.stopCh:
-				close(gb.pauseCh)
-				close(gb.stopCh)
-				gb.stopCh = nil
-				gb.pauseCh = nil
-				break gbLoop
-			}
-		default:
-			nbClockUsed := gb.cpu.Tick()
-			var clockMul uint8 = 4
-			if gb.cpu.DoubleSpeed {
-				clockMul = 2
-			}
-
-			line := gb.gpu.Tick(nbClockUsed * 4)
-			gb.timers.Tick(nbClockUsed * clockMul)
-			gb.mmu.GetOamDMA().Tick(nbClockUsed * clockMul)
-			gb.mmu.GetVramDMA().Tick(nbClockUsed * 4)
-
-			// gb.apu.Tick(nbClockUsed)
-
-			if line%frameDiv == 0 && prevLine%frameDiv != 0 { // 0 - 153
-				gb.joypad.UpdateInput(uint8(gb.inputsManager.CurrentInput()))
-				<-ticker.C
-			}
-			prevLine = line
+		// select {
+		// case <-gb.stopCh:
+		// 	close(gb.pauseCh)
+		// 	close(gb.stopCh)
+		// 	gb.stopCh = nil
+		// 	gb.pauseCh = nil
+		// 	break gbLoop
+		// case <-gb.pauseCh:
+		// 	select {
+		// 	case <-gb.pauseCh:
+		// 	case <-gb.stopCh:
+		// 		close(gb.pauseCh)
+		// 		close(gb.stopCh)
+		// 		gb.stopCh = nil
+		// 		gb.pauseCh = nil
+		// 		break gbLoop
+		// 	}
+		// default:
+		nbClockUsed := gb.cpu.Tick()
+		var clockMul uint8 = 4
+		if gb.cpu.DoubleSpeed {
+			clockMul = 2
 		}
+
+		line := gb.gpu.Tick(nbClockUsed * 4)
+		gb.timers.Tick(nbClockUsed * clockMul)
+		gb.mmu.GetOamDMA().Tick(nbClockUsed * clockMul)
+		gb.mmu.GetVramDMA().Tick(nbClockUsed * 4)
+
+		// gb.apu.Tick(nbClockUsed)
+
+		if line%frameDiv == 0 && prevLine%frameDiv != 0 { // 0 - 153
+			gb.joypad.UpdateInput(uint8(gb.inputsManager.CurrentInput()))
+			<-ticker.C
+		}
+		prevLine = line
+		// }
 	}
 }
 

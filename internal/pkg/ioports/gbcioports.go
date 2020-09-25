@@ -8,16 +8,14 @@ const (
 )
 
 // IOPorts emulate Gameboy Color IO ports
-type IOPorts struct {
-	_data [0x80]uint8
-}
+type IOPorts [0x80]uint8
 
 func (io *IOPorts) Read(addr uint16) uint8 {
-	return io._data[addr-AddrStart]
+	return io[addr-AddrStart]
 }
 
 func (io *IOPorts) Write(addr uint16, value uint8) {
-	io._data[addr-AddrStart] = value
+	io[addr-AddrStart] = value
 }
 
 func (io *IOPorts) NewPtr(addr uint16) *Ptr {

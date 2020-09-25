@@ -42,34 +42,37 @@ type manager struct {
 	iFlag *ioports.Ptr
 }
 
-func (interrupt *manager) GetNext() (jumpAddr uint16) {
+func (interrupt *manager) GetNext() uint16 {
 	if interrupt.masterFlag {
-		iFlag := interrupt.iFlag.Get()
-		validInterrupts := iFlag & interrupt.iEnable
+		validInterrupts := interrupt.iFlag.Get() & interrupt.iEnable
 		switch {
 		case validInterrupts == 0:
 			return 0x0000
 		case validInterrupts&0x01 > 0: // V-Blank
 			interrupt.iFlag.SetBit0(false)
-			jumpAddr = 0x0040
+			interrupt.masterFlag = false
+			return 0x0040
 		case validInterrupts&0x02 > 0: // LCD STAT
 			interrupt.iFlag.SetBit1(false)
-			jumpAddr = 0x0048
+			interrupt.masterFlag = false
+			return 0x0048
 		case validInterrupts&0x04 > 0: // Timer
 			interrupt.iFlag.SetBit2(false)
-			jumpAddr = 0x0050
+			interrupt.masterFlag = false
+			return 0x0050
 		case validInterrupts&0x08 > 0: // Serial
 			interrupt.iFlag.SetBit3(false)
-			jumpAddr = 0x0058
+			interrupt.masterFlag = false
+			return 0x0058
 		case validInterrupts&0x10 > 0: // Joypad
 			interrupt.iFlag.SetBit4(false)
-			jumpAddr = 0x0060
+			interrupt.masterFlag = false
+			return 0x0060
+		default:
+			return 0x000
 		}
 	}
-	if jumpAddr != 0x0000 {
-		interrupt.masterFlag = false
-	}
-	return jumpAddr // OxOOOO is not a valid interrupt jump address, used as 'NO INTERRUPT' for this function ONLY !!!
+	return 0x0000 // 0x0000 is not a valid interrupt jump address, used as 'NO INTERRUPT' for this function ONLY !!!
 }
 
 func (interrupt *manager) Read(_ uint16) uint8 {
